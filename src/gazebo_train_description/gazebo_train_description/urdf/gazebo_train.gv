@@ -1,0 +1,32 @@
+digraph G {
+node [shape=box];
+"base_footprint" [label="base_footprint"];
+"base_link" [label="base_link"];
+"camera_link" [label="camera_link"];
+"camera_lens_link" [label="camera_lens_link"];
+"imu_link" [label="imu_link"];
+"laser_link" [label="laser_link"];
+"wheel_left_link" [label="wheel_left_link"];
+"wheel_left_link" [label="wheel_left_link"];
+"wheel_right_link" [label="wheel_right_link"];
+"wheel_right_link" [label="wheel_right_link"];
+node [shape=ellipse, color=blue, fontcolor=blue];
+"base_footprint" -> "base_joint" [label="xyz: 0 0 -0.03 \nrpy: 0 -0 0"]
+"base_joint" -> "base_link"
+"base_link" -> "camera_base_joint" [label="xyz: -0.15 -0.02 0.785 \nrpy: 0 -0 1.5"]
+"camera_base_joint" -> "camera_link"
+"camera_link" -> "camera_lens_joint" [label="xyz: 0.25 0.02 0.09 \nrpy: -1.571 -0 -1.571"]
+"camera_lens_joint" -> "camera_lens_link"
+"base_link" -> "imu_joint" [label="xyz: -0.25 -0.25 0.468 \nrpy: 0 -0 0"]
+"imu_joint" -> "imu_link"
+"base_link" -> "laser_joint" [label="xyz: -0.02 0 0.8 \nrpy: 0 -0 0"]
+"laser_joint" -> "laser_link"
+"base_link" -> "wheel_left_joint2" [label="xyz: -0.465 -0.665 0.15 \nrpy: -1.5708 0 0"]
+"wheel_left_joint2" -> "wheel_left_link"
+"base_link" -> "wheel_left_joint2" [label="xyz: -0.465 -0.665 0.15 \nrpy: -1.5708 0 0"]
+"wheel_left_joint2" -> "wheel_left_link"
+"base_link" -> "wheel_right_joint2" [label="xyz: -0.465 0.135 0.15 \nrpy: -1.5708 0 0"]
+"wheel_right_joint2" -> "wheel_right_link"
+"base_link" -> "wheel_right_joint2" [label="xyz: -0.465 0.135 0.15 \nrpy: -1.5708 0 0"]
+"wheel_right_joint2" -> "wheel_right_link"
+}

@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="turtlebot3_caster">
+    <xacro:macro name="turtlebot3_caster" params="alignment *origin">
+        <link name="caster_back_${alignment}_link">
+            <inertial>
+                <origin xyz="0 0 0" />
+                <mass value="0.01" />
+                <inertia ixx="0.00000001" ixy="0.0" ixz="0.0" iyy="0.00000001" iyz="0.0" izz="0.00000001" />
+            </inertial>
+            <collision>
+                <origin rpy="0 0 0" xyz="0 0 0"/>
+                <geometry>
+                    <sphere radius="0.005"/>
+                </geometry>
+            </collision>
+        </link>
+        <joint name="caster_back_${alignment}_joint" type="fixed">
+            <parent link="base_link"/>
+            <child link="caster_back_${alignment}_link"/>
+            <xacro:insert_block name="origin"/>
+        </joint>
+    </xacro:macro>
+</robot>
