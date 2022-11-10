@@ -3,8 +3,7 @@
 
 <div align="center">
   <p>
-  
-   This is a student project to simulate a train in gazebo. Based on an already existing project, ros2 was integrated to control the train. The train was also equipped with two sensors Ouster OS1-32 and Stereolabs ZED.
+   This is a project to simulate a train in gazebo. ROS2 was integrated to control the train. The train was also equipped with sensors Ouster OS1-32, Stereolabs ZED and an IMU.
   </p>
 </div>
 
