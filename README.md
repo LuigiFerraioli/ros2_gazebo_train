@@ -1,5 +1,3 @@
-![FH AACHEN](https://www.testa-fid.de/upload/mediapool/Kunden/FH-Aachen.jpg)
-
 # <div align="center">Gazebo Train Simulation with Ros2</div>
 
 
