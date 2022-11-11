@@ -583,23 +583,13 @@ Mehr Informationen zum Gazbeo-Plugin: [**Gazebo IMU**](https://classic.gazebosim
 For business inquiries or professional support requests please visit 
 <br>
 <div align="center">
-  <a href="https://git.fh-aachen.de/dd5862s" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/master/social/logo-social-github.png" width="3%" alt="" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/master/social/logo-transparent.png" width="3%" alt="" />
-  <a href="https://de.linkedin.com/in/david-dembski-b4154520a/en?trk=people-guest_people_search-card" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/master/social/logo-social-linkedin.png" width="3%" alt="" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/master/social/logo-transparent.png" width="3%" alt="" />
-  <a href="https://www.instagram.com/dembski97/" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/master/social/logo-social-instagram.png" width="3%" alt="" /></a>
-    <img src="https://github.com/ultralytics/assets/raw/master/social/logo-transparent.png" width="3%" alt="" />
   <a href="https://git.fh-aachen.de/lf4943s" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/master/social/logo-social-github.png" width="3%" alt="" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/master/social/logo-transparent.png" width="3%" alt="" />
+    <img src="images/logo-social-github.png" width="3%" alt="" /></a>
+  <img src="images/logo-transparent.png" width="3%" alt="" />
   <a href="https://www.linkedin.com/in/luigi-ferraioli-850554250/"  style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/master/social/logo-social-linkedin.png" width="3%" alt="" /></a>
-  <img src="https://github.com/ultralytics/assets/raw/master/social/logo-transparent.png" width="3%" alt="" />
+    <img src="images/logo-social-linkedin.png" width="3%" alt="" /></a>
+  <img src="images/logo-transparent.png" width="3%" alt="" />
   <a href="https://www.instagram.com/_luigi_21/" style="text-decoration:none;">
-    <img src="https://github.com/ultralytics/assets/raw/master/social/logo-social-instagram.png" width="3%" alt="" /></a>
-    <img src="https://github.com/ultralytics/assets/raw/master/social/logo-transparent.png" width="3%" alt="" />
+    <img src="images/logo-social-instagram.png" width="3%" alt="" /></a>
 
 </div>
