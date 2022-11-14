@@ -572,12 +572,9 @@ Mehr Informationen zum Gazbeo-Plugin: [**Gazebo IMU**](https://classic.gazebosim
     <img src="https://newscrewdriver.files.wordpress.com/2018/07/sdformat.png"  width="7%" lt="SDF" /></a>
 </div>
 
+<br/>
+<br/>
 
-
-<br /> 
-<br /> 
-
- 
 # <div align="center">Contact</div>
 
 For business inquiries or professional support requests please visit 
@@ -585,10 +582,10 @@ For business inquiries or professional support requests please visit
 <div align="center">
   <a href="https://git.fh-aachen.de/lf4943s" style="text-decoration:none;">
     <img src="https://github.com/Zerquer/archetyp/blob/main/social/github.png?raw=true" width="3%" alt="" /></a>
-  <img src="images/logo-transparent.png" width="3%" alt="" />
+  <img src="https://github.com/Zerquer/archetyp/blob/main/social/transparent.png?raw=true" width="3%" alt="" />
   <a href="https://www.linkedin.com/in/luigi-ferraioli-850554250/"  style="text-decoration:none;">
     <img src="https://github.com/Zerquer/archetyp/blob/main/social/linkedin.png?raw=true" width="3%" alt="" /></a>
-  <img src="images/logo-transparent.png" width="3%" alt="" />
+  <img src="https://github.com/Zerquer/archetyp/blob/main/social/transparent.png?raw=true" width="3%" alt="" />
   <a href="https://www.instagram.com/_luigi_21/" style="text-decoration:none;">
     <img src="https://github.com/Zerquer/archetyp/blob/main/social/instagram.png?raw=true" width="3%" alt="" /></a>
 
