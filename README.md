@@ -584,12 +584,12 @@ For business inquiries or professional support requests please visit
 <br>
 <div align="center">
   <a href="https://git.fh-aachen.de/lf4943s" style="text-decoration:none;">
-    <img src="images/logo-social-github.png" width="3%" alt="" /></a>
+    <img src="https://github.com/Zerquer/archetyp/blob/main/social/github.png?raw=true" width="3%" alt="" /></a>
   <img src="images/logo-transparent.png" width="3%" alt="" />
   <a href="https://www.linkedin.com/in/luigi-ferraioli-850554250/"  style="text-decoration:none;">
-    <img src="images/logo-social-linkedin.png" width="3%" alt="" /></a>
+    <img src="https://github.com/Zerquer/archetyp/blob/main/social/linkedin.png?raw=true" width="3%" alt="" /></a>
   <img src="images/logo-transparent.png" width="3%" alt="" />
   <a href="https://www.instagram.com/_luigi_21/" style="text-decoration:none;">
-    <img src="images/logo-social-instagram.png" width="3%" alt="" /></a>
+    <img src="https://github.com/Zerquer/archetyp/blob/main/social/instagram.png?raw=true" width="3%" alt="" /></a>
 
 </div>
