@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://ros.org/wiki/xacro" name="turtlebot3_wheel">
-    <xacro:macro name="turtlebot3_wheel" params="alignment *origin">
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="gazebo_train_wheel">
+    <xacro:macro name="gazebo_train_wheel" params="alignment *origin">
         <link name="wheel_${alignment}_link">
             <visual>
                 <origin xyz="0 0 0" rpy="${M_PI*0.5} 0 0"/>

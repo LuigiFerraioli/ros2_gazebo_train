@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
-<robot xmlns:xacro="http://ros.org/wiki/xacro" name="turtlebot3_caster">
-    <xacro:macro name="turtlebot3_caster" params="alignment *origin">
+<robot xmlns:xacro="http://ros.org/wiki/xacro" name="gazebo_train_caster">
+    <xacro:macro name="gazebo_train_caster" params="alignment *origin">
         <link name="caster_back_${alignment}_link">
             <inertial>
                 <origin xyz="0 0 0" />

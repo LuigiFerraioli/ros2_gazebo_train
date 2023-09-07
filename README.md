@@ -1,9 +1,12 @@
+
 # <div align="center">Gazebo Train Simulation with Ros2</div>
 
 
 <div align="center">
   <p>
-   This is a project to simulate a train in gazebo. ROS2 was integrated to control the train. The train was also equipped with sensors Ouster OS1-32, Stereolabs ZED and an IMU.
+  
+   This is a project to simulate a train in gazebo. 
+
   </p>
 </div>
 
@@ -15,34 +18,68 @@
 # <div align="center">Install</div>
 
 Clone the Repository 
-```
-git clone https://git.fh-aachen.de/lf4943s/gazebo_train.git
+```bash
+git clone https://github.com/Zerquer/ros2_gazebo_train.git
 ```
 Enter your FH-ID and password
 
-```
+```bash
 cd gazebo_train
 rosdep install --from-paths src --ignore-src -r -y
-colcon build
+colcon build --symlink.install
 source install/setup.bash
 ```
+
+## <div align="center">Requirements</div>
+
+In addition to the base ROS installation, the following ROS packages are required:
+```bash
+sudo apt install -y
+    ros-$ROS_DISTRO-rviz-imu-plugin
+```
+where `$ROS-DISTRO` is either `foxy` or `humble`.
+
+
 <br />
+<br/>
 
 # <div align="center">Launch the simulation</div>
 
-## Launch the Gazebo_Train_Simulation
+### Environment simulation
 
+<details>
+<summary>Test World</summary>
+<br />
+
+Simulates an empty world consisting only of tracks
 ```
 ros2 launch gazebo_train_gazebo gazebo_train.launch.py
 ```
 <br />
+</details>
+<details>
+<summary>Presentation World</summary>
+<br />
 
-## Launch the Gazebo_Train_Simulation for a Presentation
-
+Simulates a city -> can be used for presentation
 ```
 ros2 launch gazebo_train_gazebo city_train.launch.py
 ```
 <br />
+</details>
+<details>
+<summary>KMAC World</summary>
+<br />
+
+Simulates the KMAC's rail vehicle laboratory.
+```
+ros2 launch gazebo_train_gazebo kmac_train.launch.py
+```
+
+<br />
+</details>
+
+
 <br />
 
 # <div align="center">Features</div>
@@ -321,6 +358,9 @@ Mehr Informationen zum Sensor: [**Ouster**](https://ouster.com/products/scanning
 Die ZED2 ist eine hochauflösendes 3D-Videocamera die mittig an der Spitze des Zuges befestigt ist. Mit einer Pixelgröße 2μm x 2μm und einer Field od View von Max. 110°(H) x 70°(V) x 120°(D) und neuronale Tiefenwahrnehmung der Umgebung, ist diese herrvorragend für den Einsatz am Train geeignet.
 Es besteht die Möglichkeit die Parameter des Sensors in der Simulationsumgebung umzustellen.
 
+<br />
+
+
 Den Sensor in der Simulation sichtbar machen
 ```
 <visualize>true</visualize>
@@ -333,19 +373,38 @@ Den Sensor in der Simulation dauerhaft anschalten
 
 Die Sensoreigenschaften verändern
 ```
-        <update_rate>30</update_rate>                 #Änderung der Updaterate in Hz
-        <pose>0.022 -0.8 0.6 0 0 -1.571</pose>        #Änderung der Orientierung im Raum
-        <camera name="intel_realsense_r200">          #Änderung des Cameranamens
-          <horizontal_fov>1.02974</horizontal_fov>
-          <image>
-            <width>1920</width>                       #Änderung der Cameraauflösung
-            <height>1080</height>                     #Änderung der Cameraauflösung
-            <format>R8G8B8</format>                   #Änderung des Farbraumes
-          </image>
-          <clip>
-            <near>0.02</near>                         #Änderung der minimalen Erkennungsdistanz
-            <far>300</far>                            #Änderung der maximalen Erkennungsdistanz
-          </clip>
+<sensor name="zed2i_depth" type="depth">
+  <always_on>1</always_on>                    <!-- Sensor ist immer aktiv -->
+  <update_rate>1</update_rate>                <!-- Aktualisierungsrate des Sensors in Hz -->
+  <pose>0.022 -0.8 0.6 0 0 -1.571</pose>      <!-- Pose des Sensors im Raum (Position und Orientierung) -->
+  <camera name="realsense_depth_camera">
+    <horizontal_fov>1.02974</horizontal_fov>  <!-- Horizontaler Sichtfeldwinkel des Sensors in Bogenmaß -->
+    <image>
+      <width>1920</width>                     <!-- Breite des Kamerabildes -->
+      <height>1080</height>                   <!-- Höhe des Kamerabildes -->
+      <format>B8R8G8</format>                 <!-- Bildformat (Farbkanalreihenfolge) -->
+    </image>
+    <clip>
+      <near>0.02</near>                       <!-- Minimale Erkennungsdistanz -->
+      <far>20</far>                           <!-- Maximale Erkennungsdistanz -->
+    </clip>
+    <noise>
+      <type>gaussian</type>                   <!-- Art des Sensorrauschens (gaussian für Gauss'sches Rauschen) -->
+      <mean>0.0</mean>                        <!-- Mittelwert des Rauschens -->
+      <stddev>0.007</stddev>                  <!-- Standardabweichung des Rauschens -->
+    </noise>
+  </camera>
+  <plugin name="zed2i_depth_driver" filename="libgazebo_ros_camera.so">
+    <ros>
+    </ros>
+    <camera_name>zed2i_depth</camera_name>     <!-- Name der Kamera im ROS-Kontext -->
+    <frame_name>camera_lens_link</frame_name>  <!-- Name des Koordinatenrahmens für die Kamera -->
+    <hack_baseline>0.07</hack_baseline>        <!-- Baseline-Hack für Stereo-Sicht -->
+    <min_depth>0.001</min_depth>               <!-- Minimale Tiefenmessung -->
+    <max_depth>100</max_depth>                 <!-- Maximale Tiefenmessung -->
+  </plugin>
+</sensor>
+
 ```
 <br/>
 
@@ -357,7 +416,15 @@ oder alternativ direkt visualisiert werden
 ```
 ros2 run rqt_image_view rqt_image_view 
 ```
+<br/>
 
+RVIZ Configaration
+
+Es ist zusätzlich möglich sich eine Pointcloud aus der Stereocamera ausgeben zu lassen. Hierfür muss das Image-Topic `/zed2i_depth/depth/image_raw` und das Pointcloud2-Topic /`zed2i_depth/points` subscribt werden. Der Output sollte dann wie in der nachfolgenden Abbildung aussehen. 
+
+Eine Vorlage der Rviz-Configuration ist hier zu finden: [**rviz-file**](/src/gazebo_train_gazebo/rviz/) 
+
+![](images/rviz2.png)
 <br />
 
 Mehr Informationen zum Gazbeo-Plugin: [**Camera Gazebo**](https://classic.gazebosim.org/tutorials?tut=ros_gzplugins#Camera)
@@ -393,29 +460,29 @@ Mehr Informationen zum Gazbeo-Plugin: [**Gazebo IMU**](https://classic.gazebosim
 
 <br />
 
-# <div align="center">Nützliche Befehle</div>
+# <div align="center">Useful Commands</div>
 
   <details>
   <summary>ROS2 Commands</summary>
   <br /> 
 
-   Übersicht über nützliche Befehle als PDF [**ROS2 Cheats Sheet**](https://github.com/ubuntu-robotics/ros2_cheats_sheet/blob/master/cli/cli_cheats_sheet.pdf)  
+   Overview of useful commands as a PDF [**ROS2 Cheats Sheet**](https://github.com/ubuntu-robotics/ros2_cheats_sheet/blob/master/cli/cli_cheats_sheet.pdf)  
 
-  Weiterhin hilfreich zweimaliges Betätigen der Tabulatortaste um die möglichen Eingabebefehle aufzulisten
+  Also helpful: press the Tab key twice to list possible input commands.
   <br />
 
-  Gibt eine Auflistung aller aktiven Topics zurück
+  Get a list of all active topics and visualize the data of a topic:
   Visualisierung der Daten des Topics
   ```
   ros2 topic echo /(Topicname)
   ```
-  Gibt den Type, die Anzahl der Publisher und Subscriber an
+  Get the type, number of publishers, and subscribers for a topic:
   ```
   ros2 topic info /(Topicname)
   ```
 
 
-  Mehr Informationen zu Nodes : [**ROS2 Understanding Topics**](https://docs.ros.org/en/foxy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics.html)
+  More information on nodes: [**ROS2 Understanding Topics**](https://docs.ros.org/en/foxy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics.html)
 
   <br />
 
@@ -434,10 +501,10 @@ Mehr Informationen zum Gazbeo-Plugin: [**Gazebo IMU**](https://classic.gazebosim
 
   ### RVIZ
 
-  RVIZ ist eine grafische Benutzeroberfläche von ROS, mit der Sie viele Informationen visualisieren können.
-  Mit dem Reiter **add** > **By topic** können einkommende Topics der Visualisierung hinzufügen 
+  RVIZ is a graphical user interface for ROS that allows you to visualize a lot of information.
+  To add incoming topics to visualization, use the tab**add** > **By topic**.
 
-  Zum Starten des 3D visualization tool for ROS2. Stellen Sie sicher, dass Sie **rviz2** installiert haben
+  To start the 3D visualization tool for ROS2, make sure you have **rviz2** installed:
   ```
   ros2 run rviz2 rviz2
   ```
@@ -445,22 +512,22 @@ Mehr Informationen zum Gazbeo-Plugin: [**Gazebo IMU**](https://classic.gazebosim
 
   ### RQT
 
-  RQt ist ein Framework für grafische Benutzeroberflächen, das verschiedene Tools und Schnittstellen in Form von Plugins implementiert.
+  RQt is a framework for graphical user interfaces that implements various tools and interfaces in the form of plugins.
 
-  Stellen Sie sicher, dass Sie **rqt** installiert haben
+  Make sure you have **rqt** installed.
 
   <br />
 
-  Zum Visualisieren der Topics und Verknüpfungen
+  To visualize topics and connections:
   ```
   ros2 run rqt_graph rqt_graph 
   ```
-  Zum subscriben des Topics **/camera/image_raw** und zum visualisieren der Camera
+  To subscribe to the topic **/camera/image_raw** and visualize the camera:
   ```
   ros2 run rqt_image_view rqt_image_view 
   ```
 
-  Mehr Informationen zu Nodes : [**ROS2 Understanding RQT**](https://docs.ros.org/en/foxy/Concepts/About-RQt.html)
+  More information on RQt [**ROS2 Understanding RQT**](https://docs.ros.org/en/foxy/Concepts/About-RQt.html)
 
 
   <br />
@@ -468,8 +535,13 @@ Mehr Informationen zum Gazbeo-Plugin: [**Gazebo IMU**](https://classic.gazebosim
   <details>
   <summary>Gazebo Commands</summary>
   <br />
-  
-  ![](images/gazebo.png)
+
+  Shutdown Gazebo
+  ```
+  killall -9 gazebo & killall -9 gzserver  & killall -9 gzclient
+  ```
+
+  ![](https://git.fh-aachen.de/lf4943s/gazebo_train/-/blob/main/images/gazebo.png)
 
   - Transparent    : Display models as transparent
   - Wireframe      : Display models as wireframe
@@ -482,7 +554,7 @@ Mehr Informationen zum Gazbeo-Plugin: [**Gazebo IMU**](https://classic.gazebosim
 
   <br />
 
-  Mehr Informationen zu Gazebo: [**Gazebo**](https://classic.gazebosim.org/) 
+  More information on Gazebo: [**Gazebo**](https://classic.gazebosim.org/) 
 
   <br />
   </details>
@@ -494,16 +566,15 @@ Mehr Informationen zum Gazbeo-Plugin: [**Gazebo IMU**](https://classic.gazebosim
   <br />
 
 
-  Wandelt eine URDF-Datei in eine SDF-Datei um
+  Convert a URDF file to an SDF file:
   ```
   gz sdf -p /my_urdf.urdf > /my_sdf.sdf
   ```
-  Erzeugt eine PDF-Datei mit den Links und Joints und deren Orientierung
+  Generate a PDF file with links and joints and their orientations from a URDF file:
   ```
   urdf_to_graphiz /my_urdf.urdf
   ```
-  Schnelle Erzeugung eines neuen Modells für Tests
-
+  Quickly create a new model for tests:
   ```
   <?xml version='1.0'?>
   <sdf version='1.7'>
@@ -530,25 +601,11 @@ Mehr Informationen zum Gazbeo-Plugin: [**Gazebo IMU**](https://classic.gazebosim
   ```
   <br />
 
-  Mehr Informationen zu SDF-Files: [**SDFormat**](http://sdformat.org/) 
+  More information on SDF files: [**SDFormat**](http://sdformat.org/) 
 
   <br />
   </details>
 
-# <div align="center">Fehlerbehebung</div>
-
-<br />
-  <details>
-  <summary>Löschen der  log, build und install Ordner </summary>
-
-  <br />
-
-  Falls die **log/**, **build/** und **install/** Ordner geschlöscht werden sollten, muss der **urdf** und der **mesh** Ordner aus dem **/.../gazebo_train/src/gazebo_train_description/** in den **/.../gazebo_train/install/gazebo_train_description/share/gazebo_train_description** Ordner kopiert werden. Dies geschieht leider nicht automatisch beim **builden** und konnte nicht behoben werden.
-
-  <br />
-  </details>
-
-<br />
 <br />
 
 # <div align="center">Environments</div>
@@ -572,14 +629,18 @@ Mehr Informationen zum Gazbeo-Plugin: [**Gazebo IMU**](https://classic.gazebosim
     <img src="https://newscrewdriver.files.wordpress.com/2018/07/sdformat.png"  width="7%" lt="SDF" /></a>
 </div>
 
-<br/>
-<br/>
 
+
+<br /> 
+<br /> 
+
+ 
 # <div align="center">Contact</div>
 
 For business inquiries or professional support requests please visit 
 <br>
 <div align="center">
+    <img src="https://github.com/Zerquer/archetyp/blob/main/social/transparent.png?raw=true" width="3%" alt="" />
   <a href="https://git.fh-aachen.de/lf4943s" style="text-decoration:none;">
     <img src="https://github.com/Zerquer/archetyp/blob/main/social/github.png?raw=true" width="3%" alt="" /></a>
   <img src="https://github.com/Zerquer/archetyp/blob/main/social/transparent.png?raw=true" width="3%" alt="" />
@@ -588,5 +649,6 @@ For business inquiries or professional support requests please visit
   <img src="https://github.com/Zerquer/archetyp/blob/main/social/transparent.png?raw=true" width="3%" alt="" />
   <a href="https://www.instagram.com/_luigi_21/" style="text-decoration:none;">
     <img src="https://github.com/Zerquer/archetyp/blob/main/social/instagram.png?raw=true" width="3%" alt="" /></a>
+    <img src="https://github.com/Zerquer/archetyp/blob/main/social/transparent.png?raw=true" width="3%" alt="" />
 
 </div>

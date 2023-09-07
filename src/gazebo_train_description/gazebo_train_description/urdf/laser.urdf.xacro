@@ -4,7 +4,7 @@
     <visual>
       <origin xyz="-0.035 0.036 0.020" rpy="${M_PI*0.5} 0 0"/>
       <geometry>
-        <mesh filename="package://tb3_description/meshes/RPLIDAR.stl" scale="0.001 0.001 0.001"/>
+        <mesh filename="package://gazebo_train_description/meshes/RPLIDAR.stl" scale="0.001 0.001 0.001"/>
       </geometry>
       <material name="red"/>
     </visual>

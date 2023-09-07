@@ -3698,40 +3698,6 @@
     </model>
     <model name='stop_light_post_clone'>
       <static>1</static>
-      <link name='link'>
-        <collision name='post'>
-          <geometry>
-            <mesh>
-              <uri>model://stop_light_post/meshes/stop_light_post.obj</uri>
-              <scale>0.01 0.01 0.01</scale>
-            </mesh>
-          </geometry>
-          <max_contacts>10</max_contacts>
-          <surface>
-            <contact>
-              <ode/>
-            </contact>
-            <bounce/>
-            <friction>
-              <torsional>
-                <ode/>
-              </torsional>
-              <ode/>
-            </friction>
-          </surface>
-        </collision>
-        <visual name='post'>
-          <geometry>
-            <mesh>
-              <uri>model://stop_light_post/meshes/stop_light_post.obj</uri>
-              <scale>0.01 0.01 0.01</scale>
-            </mesh>
-          </geometry>
-        </visual>
-        <self_collide>0</self_collide>
-        <enable_wind>0</enable_wind>
-        <kinematic>0</kinematic>
-      </link>
       <frame name='right_light::__model__' attached_to='right_light::link'>
         <pose relative_to='__model__'>0 -0.05 4 0 -0 0</pose>
       </frame>

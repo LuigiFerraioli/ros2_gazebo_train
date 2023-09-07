@@ -193,7 +193,7 @@
     <joint name="camera_lens_joint" type="fixed">
         <parent link="camera_link"/>
         <child link="camera_lens_link"/>
-        <origin rpy="-1.571 0 -1.571" xyz=" 0.25 0.02 0.09"/>
+        <origin rpy="0 0 0" xyz=" 0.25 0.02 0.09"/>
     </joint>
     <link name="imu_link"/>
     <joint name="imu_joint" type="fixed">
