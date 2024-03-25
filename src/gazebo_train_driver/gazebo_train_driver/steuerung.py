@@ -1,121 +1,72 @@
-#GUI interface zur benutzerfereundlicheren Bedienung 
+# GUI interface zur benutzerfereundlicheren Bedienung 
 #!/usr/bin/env python3
 
-###################  import  ###########################
 import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import Joy
 from geometry_msgs.msg import Twist
-from tkinter import*
-from unittest import case
-from click import command
-############# create a node class  #####################
-
+from tkinter import *
 
 class Teleop(Node):
     def __init__(self): 
-        super().__init__("teleop") 
+        super().__init__("steuerung") 
         self.pub = self.create_publisher(Twist, "/cmd_vel", 1)
-        cmd = Twist() 
-        global counter
-        counter = 0
+        self.max_speed = 2.0 	# m/s
+        self.direction = 1 	# positiv/negativ
 
-        def fspeed25():
-            print("Geschwindigkeit = 25%")
-            speed_scale = 0.3
-            cmd.linear.x = speed_scale * direktion
-            self.pub.publish(cmd)
+    def start_movement(self):
+        cmd = Twist()
+        cmd.linear.x = self.max_speed * 0.1 * self.direction
+        self.pub.publish(cmd)
 
-        def fspeed50():
-            print("Geschwindigkeit = 50%")
-            speed_scale = 0.6
-            cmd.linear.x = speed_scale * direktion
-            self.pub.publish(cmd)
+    def stop_movement(self):
+        cmd = Twist()
+        self.pub.publish(cmd)
 
-        def fspeed75():
-            print("Geschwindigkeit = 75%")
-            speed_scale = 0.9
-            cmd.linear.x = speed_scale * direktion
-            self.pub.publish(cmd)
+    def toggle_direction(self):
+        self.direction *= -1
 
-        def fspeed100():
-            print("Geschwindigkeit = 100%")
-            speed_scale = 1.2
-            cmd.linear.x = speed_scale * direktion
-            self.pub.publish(cmd)
+    def set_speed(self, scale):
+        cmd = Twist()
+        cmd.linear.x = self.max_speed * scale * self.direction
+        self.pub.publish(cmd)
 
-        def fstart():
-            print("Start wird eingeleitet")
-            speed_scale = 0.1
-            fgetdirektion()
-            cmd.linear.x = speed_scale * direktion
-            self.pub.publish(cmd)
+class GUI:
+    def __init__(self, node):
+        self.node = node
+        self.window = Tk(className=" Steuerung Gazebo Train")
 
-        def fstop():
-            print("STOP -> Keine Beschleunigung")
-            cmd = Twist()
-            cmd.linear.x = 0.0
-            cmd.linear.y = 0.0
-            cmd.linear.z = 0.0
-            cmd.angular.x = 0.0
-            cmd.angular.y = 0.0
-            cmd.angular.z = 0.0
-            self.pub.publish(cmd)
+        self.speed_buttons = []
+        speeds = [0.25, 0.5, 0.75, 1.0]
+        for speed in speeds:
+            button = Button(self.window, text=f"Speed {int(speed * 100)}%", command=lambda s=speed: self.set_speeds(s))
+            button.config(font=('Ink Free', 15, 'bold'))
+            button.pack()
+            self.speed_buttons.append(button)
 
-        def fdirektion():
-            print("Richtungsänderung")
-            global counter
-            global direktion
-            counter += 1
+        self.start_button = Button(self.window, text="Start", command=self.node.start_movement)
+        self.start_button.config(font=('Ink Free', 15, 'bold'))
+        self.start_button.pack()
 
-            if counter==1:
-                direktion = -1
-            if counter==2:
-                direktion = 1
-                counter = 0
+        self.stop_button = Button(self.window, text="Stop", command=self.node.stop_movement)
+        self.stop_button.config(font=('Ink Free', 15, 'bold'))
+        self.stop_button.pack()
 
-        def fgetdirektion():
-            global direktion     
-            direktion = 1
+        self.direction_button = Button(self.window, text="Direction", command=self.node.toggle_direction)
+        self.direction_button.config(font=('Ink Free', 15, 'bold'))
+        self.direction_button.pack()
 
-        window = Tk(className=" Steuerung Gazebo Train")
-        direktionb = Button(window,text="Direction")
-        start = Button(window,text="Start")
-        stop = Button(window,text="Stop")
-        speed25= Button(window,text=" Speed 25%")
-        speed50 = Button(window,text=" Speed 50%")
-        speed75 = Button(window,text=" Speed 75%")
-        speed100 = Button(window,text=" Speed 100%")
-        speed25.config(command=fspeed25)
-        speed50.config(command=fspeed50)
-        speed75.config(command=fspeed75)
-        speed100.config(command=fspeed100)
-        start.config(command=fstart)
-        stop.config(command=fstop)
-        direktionb.config(command=fdirektion)
-        speed25.config(font=('Ink Free',15,'bold'))
-        speed50.config(font=('Ink Free',15,'bold'))
-        speed75.config(font=('Ink Free',15,'bold'))
-        speed100.config(font=('Ink Free',15,'bold'))
-        start.config(font=('Ink Free',15,'bold'))
-        stop.config(font=('Ink Free',15,'bold'))
-        direktionb.config(font=('Ink Free',15,'bold'))
-        speed25.pack()
-        speed50.pack()
-        speed75.pack()
-        speed100.pack()
-        start.pack()
-        stop.pack()
-        direktionb.pack()
-        window.geometry('200x270+0+0')
-        window.attributes('-topmost', True)
-        window.mainloop()
+        self.window.geometry('200x270+0+0')
+        self.window.attributes('-topmost', True)
+        self.window.mainloop()
 
-	
+    def set_speeds(self, scale):
+        self.node.set_speed(scale)
 
 def main():
     rclpy.init()
     node = Teleop()
+    gui = GUI(node)
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
@@ -125,4 +76,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
 

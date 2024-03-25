@@ -26,9 +26,6 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            #'teleop.py = tb3_teleop.teleop:main',
-            #'new_teleop.py = tb3_teleop.new_teleop:main',
-            #'joy_node.py = tb3_teleop.joy_node:main',
         ],
     },
 )

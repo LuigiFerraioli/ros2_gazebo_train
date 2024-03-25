@@ -1,3 +1,0 @@
-[console_scripts]
-steuerung = gazebo_train_driver.steuerung:main
-teleop = gazebo_train_driver.teleop:main
