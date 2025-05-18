@@ -9,12 +9,14 @@ from launch.substitutions import LaunchConfiguration
 from launch_ros.actions import Node
 from launch.actions import DeclareLaunchArgument
 
+
 def generate_launch_description():
     use_sim_time = LaunchConfiguration('use_sim_time', default='true')
     model_name = 'aruco_visual_marker_1'
     model_sdf_file = 'model.sdf'
-    
-    sdf_path = os.path.join(get_package_share_directory('gazebo_train_gazebo'), 'models', model_name, model_sdf_file)
+
+    sdf_path = os.path.join(get_package_share_directory(
+        'gazebo_train_gazebo'), 'models', model_name, model_sdf_file)
 
     xml = open(sdf_path, 'r').read()
     xml = xml.replace('"', '\\"')
@@ -23,7 +25,8 @@ def generate_launch_description():
     pose = '<pose>-3.5 0 1.1 0 1.570796  0</pose>'
     xml_with_pose = xml.replace('</model>', pose + '</model>')
 
-    spawn_args = '{name: \"' + model_name + '\", xml: \"'  +  xml_with_pose + '\" }'
+    spawn_args = '{name: \"' + model_name + \
+        '\", xml: \"' + xml_with_pose + '\" }'
 
     return LaunchDescription([
         DeclareLaunchArgument(
@@ -33,7 +36,8 @@ def generate_launch_description():
         ),
 
         ExecuteProcess(
-            cmd=['ros2', 'service', 'call', '/spawn_entity', 'gazebo_msgs/SpawnEntity', spawn_args],
+            cmd=['ros2', 'service', 'call', '/spawn_entity',
+                 'gazebo_msgs/SpawnEntity', spawn_args],
             output='screen'),
 
         Node(

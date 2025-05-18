@@ -51,14 +51,14 @@
         <visual>
             <origin rpy="0 0 0" xyz="0 0 0.25"/>
             <geometry>
-                <mesh filename="package://gazebo_train_description/meshes/waffle_custom_base.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="package://gazebo_train_description/meshes/gazebo_train_base.stl" scale="0.001 0.001 0.001"/>
             </geometry>
             <material name="dark"/>
         </visual>
         <collision>
             <origin rpy="0 0 0" xyz="-0.10 0 0.07"/>
             <geometry>
-                <mesh filename="package://gazebo_train_description/meshes/waffle_custom_base.stl" scale="0.001 0.001 0.001"/>
+                <mesh filename="package://gazebo_train_description/meshes/gazebo_train_base.stl" scale="0.001 0.001 0.001"/>
             </geometry>
         </collision>
         <inertial>

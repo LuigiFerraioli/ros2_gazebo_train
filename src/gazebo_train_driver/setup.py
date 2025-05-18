@@ -20,13 +20,11 @@ setup(
     maintainer_email='luigi@todo.todo',
     description='TODO: Package description',
     license='TODO: License declaration',
-    tests_require=['pytest'],
     entry_points={
         'console_scripts': [
            'teleop = gazebo_train_driver.teleop:main',
-           'steuerung = gazebo_train_driver.steuerung:main',
-           'gazebo_train_converter = gazebo_train_driver.gazebo_train_converter:main',
-        ],
+           'controller = gazebo_train_driver.controller:main'
+           ],
     },
 )
 

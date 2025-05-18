@@ -43,6 +43,6 @@ def generate_launch_description():
             launch_arguments={'use_sim_time': use_sim_time}.items(),
         ),
 
-        Node(package='gazebo_train_driver',executable='steuerung',name='steuerung',output='screen'),
+        Node(package='gazebo_train_driver',executable='controller',name='controller',output='screen'),
 
     ])

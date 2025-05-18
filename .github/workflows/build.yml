@@ -1,0 +1,28 @@
+name: Build Gazebo Train (ROS 2 Humble)
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    container:
+      image: ros:humble
+      options: --user root
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Install dependencies
+        run: |
+          apt update
+          apt install -y sudo lsb-release curl gnupg2
+
+      - name: Run install script
+        run: |
+          chmod +x gazebo_train_install.sh
+          ./gazebo_train_install.sh

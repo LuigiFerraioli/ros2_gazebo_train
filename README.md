@@ -17,30 +17,23 @@
 
 # <div align="center">Install</div>
 
-Clone the Repository 
+Clone the Repository: 
 ```bash
 git clone https://github.com/Zerquer/ros2_gazebo_train.git
 ```
-Enter your FH-ID and password
 
+Install Dependencies and Build the Project
 ```bash
 cd gazebo_train
-rosdep install --from-paths src --ignore-src -r -y
-colcon build --symlink.install
-source install/setup.bash
+. gazebo_train_install.sh
 ```
 
 ## <div align="center">Requirements</div>
 
-In addition to the base ROS installation, the following ROS packages are required:
-```bash
-sudo apt install -y
-    ros-$ROS_DISTRO-rviz-imu-plugin
-```
-where `$ROS-DISTRO` is either `foxy` or `humble`.
+In addition to the base ROS installation, the following additional ROS packages are required and are listed in the requirements.txt file.
 
 
-<br />
+<br/>
 <br/>
 
 # <div align="center">Launch the simulation</div>
@@ -85,211 +78,88 @@ ros2 launch gazebo_train_gazebo kmac_train.launch.py
 # <div align="center">Features</div>
 
 <details>
-<summary>Steuerung</summary>
+<summary>Control</summary>
 
 <br />
 
-  Die Steuerung des Gazebo_Trains erfolgt über ein GUI, einen Controller oder die Tastertureingabe. Alle Steuerungen beinhalten verschiedene Geschwindigkeitsstufen und eine Richtungsänderung. Die Controller-Node und die Keyboard-Node müssen vor der Benutzung noch installiert werden.
-  Standardmäßig ist beim Installieren des Gazebo_Trains das GUI als Steuerung aktiviert, welches zusammen mit der Launch-Datei automatisch startet. Jede dieser Steuerungen publisht seine Daten auf das Topic **/cmd_vel**. Dieses Topic wiederrum wird von der Gazebosimulation subscribt und ist unmittelbar mit den Zugrädern verknüpft.
+The Gazebo_Train can be controlled via a GUI, a controller, or keyboard input. All control modes offer multiple speed levels and direction toggling. The controller node and keyboard node must be installed separately before use.  
+By default, when installing the Gazebo_Train, the GUI is the active control interface and is automatically launched with the launch file. Each control method publishes velocity commands to the `/cmd_vel` topic. This topic is subscribed to by the Gazebo simulation and is directly connected to the train's drive wheels.
 
-  <details>
-  <summary>GUI Steuerung</summary>
-  <br /> 
-
-  ![](images/Steuerung.png)
-
-  Die Steuerung des Gazebo_Trains über das GUI beinhaltet verschiedene Geschwindigkeitsstufen, sowie eine Start-Stop Funktion und eine Richtungsänderung. Wird die Launchdatei **gazebo_train.launch.py** gestartet, startet automatisch die Steuerungsnode und erscheint am linken oberen Eck des Bildschirms. Somit ist die Launch sehr portabel und es wird weder eine Tastatur noch ein Controller benötigt. Um den Zug zu starten drückt man den **Start** Button, welcher den Zug mit geringer Geschwindigkeit anfahren lässt. Um eine sichere Fahrt zu gewährleisten wird stets empfohlen die Zuggeschwindigkeit in der vorgegebenen Reihenfolge zu wählen. 
-
-
-
+<details>
+  <summary>GUI Control</summary>
   <br />
-  <details>
-  <summary>GUI Quellcode</summary>
-  <br /> 
 
-  Die Steuerung kann beliebig erweitert oder modifiziert werden. Die Geschwindigkeit wird jeweils mit dem Factor 1.0 multipliziert, somit ist die Maximalgeschwindigkeit des Zuges bei der Funktion **fspeed100()** bei 1.2. Es ist durchaus möglich den Zug auch schneller fahren zu lassen, allerdings wird dieser dann instabiler und die Möglichkeit einer Entgleisung besteht. Ohne Sesnoren konnte der Zug nach unseren Tests bis zu 3.0 facher Geschwindigkeit fahren ohne zu entgleisen. Durch Anbringung der Sensoren verlagert sich der Schwerpunkt sowie die Trägheit, was bei zu schneller Geschwindigkeit zum Ausbrechen des Zuges führen kann. Die Funktion **fstart()** setzt den Zug mit einer Geschwindigkeit < 10% in Bewegung, um einen sicheren Start zu gewährleisten. Es ist zu beachten, dass der Zug stets nur in eine Richtung gestartet werden kann. Die Funktion **fstop()** setzt alle möglichen Koordinatenrichtungen auf 0.0 zurück. Die Funktionen **fdirektion()** und **fgetdirektion()** ändern jeweils das Vorzeichen der Geschwindigkeit. Um die Richtung zu ändern wird zuerst **"Direction"** und im Anschluss die gewünschte Geschwindigkeit ausgewählt. Hierbei ist zu empfehlen stets mit einer niedrigen Geschwindigkeit zu beginnen.
+  <img src="images/Steuerung.png" alt="GUI Control Interface" />
 
-  ```
-  def fspeed25():
-      print("Geschwindigkeit = 25%")               # Ausgabe im Terminal -> erst beim Schließen des Terminals sichtbar
-      speed_scale = 0.3
-      cmd.linear.x = speed_scale * direktion
-      self.pub.publish(cmd)
-
-  def fspeed50():
-      printnt("Geschwindigkeit = 50%")             
-      speed_scale = 0.6                            # Factor der Funktion
-      cmd.linear.x = speed_scale * direktion
-      self.pub.publish(cmd)
-
-  def fspeed75():
-      print("Geschwindigkeit = 75%")               
-      speed_scale = 0.9                            
-      cmd.linear.x = speed_scale * direktion       # Speichert das Produkt der Multiplikation unter der Variablen cmd.linear.x 
-      self.pub.publish(cmd)
-
-  def fspeed100():
-      print("Geschwindigkeit = 100%")              
-      speed_scale = 1.2
-      cmd.linear.x = speed_scale * direktion
-      self.pub.publish(cmd)                        # Publishen des Variablenwertes an /cmd_vel
-
-  def fstart():
-      print("Start wird eingeleitet")              
-      speed_scale = 0.1
-      getdirektion()
-      cmd.linear.x = speed_scale * direktion
-      self.pub.publish(cmd)                        
-
-  def fstop():
-      print("STOP -> Keine Beschleunigung")        
-      cmd = Twist()
-      cmd.linear.x = 0.0                           # Setzt cmd.linear und cmd.angular zurück auf 0.0
-      cmd.linear.y = 0.0
-      cmd.linear.z = 0.0
-      cmd.angular.x = 0.0
-      cmd.angular.y = 0.0
-      cmd.angular.z = 0.0
-      self.pub.publish(cmd)                        # Publishen der eingestellten Daten an /cmd_vel
-        
-  def fdirektion():
-      print("Richtungsänderung")                   # Ausgabe im Terminal -> erst beim Schließen des Terminals sichtbar
-      global counter
-      global direktion
-      counter += 1
-
-      if counter==1:
-          direktion = -1
-      if counter==2:
-          direktion = 1
-          counter = 0
-
-  def fgetdirektion():
-      global direktion     
-      direktion = 1
-  ```
-  **/.../gazebo_train/src/gazebo_train_driver/steuerung.py**
-
+  The GUI-based control of the Gazebo_Train offers different speed levels, as well as start/stop functionality and direction toggling. When the **gazebo_train.launch.py** launch file is executed, the control node starts automatically and appears in the top-left corner of the screen. This makes the launch setup very portable and eliminates the need for a keyboard or controller.  
+  To start the train, press the **Start** button, which will initiate a smooth and slow departure. For safe operation, it is strongly recommended to select the train speed in the given sequential order.
+</details>
   <br/>
 
-  Für mehr Informationen zum erstellen eines GUI: [**TKinter**](https://docs.python.org/3/library/tkinter.html)
-
-  </details>
-  </details>
+<details>
+  <summary>Connecting a Controller</summary>
   <br />
 
-  <details>
-  <summary>Verbinden eines Controllers</summary>
-  <br /> 
-  
-  Falls Anstelle der GUI- Steuerung ein Controller oder ein Keyboard verwendet wird, muss die entsprechende Node beim Launchen der Gazebo-Simulation gestartet werden. 
-  Weiterhin empfiehlt es sich die GUI auszuschalten, hierfür in den Ordner **/.../gazebo_train/src/gazebo_train_gazebo** und **Zeile 46** durch den folgenden Ausdruck ersetzten.
-
+  If you want to use a controller or keyboard instead of the GUI control, the corresponding node must be started when launching the Gazebo simulation.  
+  It is also recommended to disable the GUI for this. To do so, go to the folder **/.../gazebo_train/src/gazebo_train_gazebo** and replace **line 46** with the following line:
 
   ```
-   ##Node(package='gazebo_train_driver',executable='steuerung',name='steuerung',output='screen'),
+  ##Node(package='gazebo_train_driver', executable='steuerung', name='steuerung', output='screen'),
   ```
-  <br /> 
+  <br />
 
-  Zum Starten der Controller-Node muss zunächst das **joy** package heruntergeladen werden.
+  Before starting the controller node, you need to install the **joy** package:
 
-  ```  
-  sudo apt install ros-(ihre Distribution)-joy
   ```
-  <br /> 
-  
-  Starten der **joy_node**
-  ```  
+  sudo apt install ros-<your-distribution>-joy
+  ```
+  <br />
+
+  Start the **joy_node**:
+
+  ```
   ros2 run joy joy_node
   ```
-  In einem neuen Terminal die bereits vorhandene **Teleop** starten
-  ```  
+
+  Then, in a new terminal, start the existing **teleop** node:
+
+  ```
   ros2 run gazebo_train_driver teleop
   ```
-  Wenn alles richtig gemacht wurde, sollte der Zug nun auch mit dem Controller bedienbar sein.
-  </details>
+
+  If everything is set up correctly, you should now be able to control the train using the controller.
+</details>
 
 <br />
 
-  <details>
-  <summary>Verbinden eines Keyboards</summary>
-  <br /> 
-  
-  Falls Anstelle der GUI-Steuerung das Keyboard verwendet werden soll, muss die entsprechende Node beim Launchen der Gazebo-Simulation gestartet werden. 
-  Weiterhin empfiehlt es sich die GUI auszuschalten, hierfür in den Ordner **/.../gazebo_train/src/gazebo_train_gazebo** und **Zeile 46** durch den folgenden Ausdruck ersetzten.
+<details>
+  <summary>Connecting a Keyboard</summary>
+  <br />
 
+  If you want to use the keyboard instead of the GUI control, the corresponding node must be started when launching the Gazebo simulation.  
+  It is also recommended to disable the GUI. To do this, go to the folder **/.../gazebo_train/src/gazebo_train_gazebo** and replace **line 46** with the following line:
 
   ```
-   ##Node(package='gazebo_train_driver',executable='steuerung',name='steuerung',output='screen'),
-  ```
-  <br /> 
-
-  Zum Starten der Keyboard-Node muss zunächst das **teleop-twist-keyboard** package heruntergeladen werden.
-
-  ```  
-  sudo apt install ros-(ihre Distribution))-teleop-twist-keyboard
-  ```
-  <br /> 
-  
-  Starten der **telop_twist_node**
-  ```  
-  ros2 launch keystroke telop_twist.launch.py
-  ```
-  Eine weitere Node ist nicht nötig, da die **telop_twist_node** die Eingabe direkt in die benötigte Twist-Message umwandelt.
-
-
-</details>
-<br/>
-
-  <details>
-  <summary>Schnittstelle Antrieb</summary>
-  <br /> 
-  
-  Die Eigenschaften des Antriebs verändern
-  ```
-    <plugin name="train_diff_drive" filename="libgazebo_ros_diff_drive.so">
-
-      <ros>
-      </ros>
-
-      <update_rate>30</update_rate>                         #Änderung der Updaterate in Hz
-
-      <!-- wheels -->
-      <left_joint>wheel_left_joint</left_joint>             #Änderung der Antriebsgelenke
-      <right_joint>wheel_right_joint</right_joint>          #Änderung der Antriebsgelenke
-
-
-      <!-- kinematics -->
-      <wheel_separation>0.287</wheel_separation>            #Änderung der Spurweite in Meter
-      <wheel_diameter>0.066</wheel_diameter>                #Änderung des Raddurchmessers
-
-      <!-- limits -->
-      <max_wheel_torque>60</max_wheel_torque>               #Änderung des maximalen Drehmoments
-      <max_wheel_acceleration>2.0</max_wheel_acceleration>  #Änderung der maximalen Beschleunigung
-
-      <command_topic>cmd_vel</command_topic>
-
-      <!-- output -->
-      <publish_odom>true</publish_odom>                     #Publishen der Odometrie
-      <publish_odom_tf>true</publish_odom_tf>               #Publishen des Odometrie Koordinatensystems
-      <publish_wheel_tf>false</publish_wheel_tf>            #Publishen des Koordinatensystems der Räder
-
-      <odometry_topic>odom</odometry_topic>
-      <odometry_frame>odom</odometry_frame>
-      <robot_base_frame>base_footprint</robot_base_frame>
-
-    </plugin>
-  ```
-  Werte, die nicht aufgeführt sind, werden defaultmäßig bestimmt. Z.B.:
-  ```
-  <!-- Topic to receive geometry_msgs/Twist message commands, defaults to `cmd_vel` -->
-  <commandTopic>cmd_vel</commandTopic>
+   ##Node(package='gazebo_train_driver', executable='steuerung', name='steuerung', output='screen'),
   ```
   <br />
 
-  Mehr Informationen zum Gazbeo-Plugin: [**Differential Drive Gazebo**](https://classic.gazebosim.org/tutorials?tut=ros_gzplugins#DifferentialDrive)
+  Before starting the keyboard node, you need to install the **teleop-twist-keyboard** package:
 
+  ```
+  sudo apt install ros-&lt;your-distribution&gt;-teleop-twist-keyboard
+  ```
+  <br />
+
+  Start the **teleop_twist_node** with:
+
+  ```
+  ros2 launch keystroke teleop_twist.launch.py
+  ```
+
+  No additional nodes are required since the **teleop_twist_node** converts keyboard input directly into the required Twist message.
 </details>
+
 <br/>
 </details>
 
@@ -300,50 +170,49 @@ ros2 launch gazebo_train_gazebo kmac_train.launch.py
 
 ![](images/laser.png)
 
-Der Ouster OS 1-32 ist ein mid-range Lidar Sensor, welcher am Dach des Zuges befestigt ist. Dieser hat eine Reichweite von 120m, eine Vertical Field of View von 45° (±22.5º) und eine Auflösung von 655,360 Punkten pro Sekunde. Es besteht die Möglichkeit die Parameter des Sensors in der Simulationsumgebung umzustellen.
+The Ouster OS1-32 is a mid-range LiDAR sensor mounted on the roof of the train. It has a range of 120 meters, a vertical field of view of 45° (±22.5º), and a resolution of 655,360 points per second. The sensor parameters can be adjusted within the simulation environment.  
+
 <br/>
 
-Den Sensor in der Simulation sichtbar machen
+To make the sensor visible in the simulation, set:
 ```
 <visualize>true</visualize>
 ```
-Den Sensor in der Simulation dauerhaft an schalten
+To keep the sensor permanently enabled in the simulation, set:
 ```
 <always_on>true</always_on>
 ```
 <br/>
 
-Die Sensoreigenschaften verändern
+You can modify the sensor properties as follows:
 ```
-        <update_rate>5</update_rate>                #Änderung der Updaterate in Hz
+        <update_rate>5</update_rate>                # Change update rate in Hz
         <ray>
           <scan>
             <horizontal>
               <samples>360</samples>
-              <resolution>1.000000</resolution>     #Änderung der Winkelauflösung
-              <min_angle>0.000000</min_angle>       #Änderung des Startwinkels
-              <max_angle>6.280000</max_angle>       #Änderung des Endwinkels
+              <resolution>1.000000</resolution>     # Change angular resolution
+              <min_angle>0.000000</min_angle>       # Change start angle
+              <max_angle>6.280000</max_angle>       # Change end angle
             </horizontal>
           </scan>
           <range>
-            <min>1</min>                            #Änderung der minimalen Scanreichweite
-            <max>12</max>                           #Änderung der maximalen Scanreichweite
-            <resolution>0.015000</resolution>       #Änderung der Scanreichweitenauflösung
+            <min>1</min>                            # Change minimum scan range
+            <max>12</max>                           # Change maximum scan range
+            <resolution>0.015000</resolution>       # Change scan range resolution
           </range>
 ```
 <br/>
 
-Die Sensordaten können mit folgendem Befehl aufgerufen werden. 
+Sensor data can be accessed with the following command:  
 ```
 ros2 topic echo /scan
 ```
 <br />
 
-Mehr Informationen zum Gazbeo-Plugin: [**Lidar Gazebo**](https://classic.gazebosim.org/tutorials?tut=ros_gzplugins#GPULaser)
-<br />
-
-Mehr Informationen zum Sensor: [**Ouster**](https://ouster.com/products/scanning-lidar/os1-sensor/)
-<br />
+More information about the Gazebo plugin: [**Lidar Gazebo**](https://classic.gazebosim.org/tutorials?tut=ros_gzplugins#GPULaser)  
+More information about the sensor: [**Ouster**](https://ouster.com/products/scanning-lidar/os1-sensor/)  
+<br /><br />
 <br />
 
 </details>
@@ -355,257 +224,111 @@ Mehr Informationen zum Sensor: [**Ouster**](https://ouster.com/products/scanning
 
 ![](images/camera.png)
 
-Die ZED2 ist eine hochauflösendes 3D-Videocamera die mittig an der Spitze des Zuges befestigt ist. Mit einer Pixelgröße 2μm x 2μm und einer Field od View von Max. 110°(H) x 70°(V) x 120°(D) und neuronale Tiefenwahrnehmung der Umgebung, ist diese herrvorragend für den Einsatz am Train geeignet.
-Es besteht die Möglichkeit die Parameter des Sensors in der Simulationsumgebung umzustellen.
+The ZED2 is a high-resolution 3D video camera mounted centrally at the front tip of the train. With a pixel size of 2μm x 2μm and a field of view up to 110°(H) x 70°(V) x 120°(D) plus neural depth perception of the environment, it is excellently suited for use on the train.  
+The sensor parameters can be adjusted within the simulation environment.
 
 <br />
 
 
-Den Sensor in der Simulation sichtbar machen
+To make the sensor visible in the simulation:  
 ```
 <visualize>true</visualize>
 ```
-Den Sensor in der Simulation dauerhaft anschalten
+To keep the sensor permanently enabled in the simulation:  
 ```
 <always_on>true</always_on>
 ```
 <br/>
 
-Die Sensoreigenschaften verändern
+Modify sensor properties:  
 ```
 <sensor name="zed2i_depth" type="depth">
-  <always_on>1</always_on>                    <!-- Sensor ist immer aktiv -->
-  <update_rate>1</update_rate>                <!-- Aktualisierungsrate des Sensors in Hz -->
-  <pose>0.022 -0.8 0.6 0 0 -1.571</pose>      <!-- Pose des Sensors im Raum (Position und Orientierung) -->
+  <always_on>1</always_on>                    <!-- Sensor is always active -->
+  <update_rate>1</update_rate>                <!-- Sensor update rate in Hz -->
+  <pose>0.022 -0.8 0.6 0 0 -1.571</pose>    <!-- Sensor pose (position and orientation) -->
   <camera name="realsense_depth_camera">
-    <horizontal_fov>1.02974</horizontal_fov>  <!-- Horizontaler Sichtfeldwinkel des Sensors in Bogenmaß -->
+    <horizontal_fov>1.02974</horizontal_fov>  <!-- Horizontal field of view in radians -->
     <image>
-      <width>1920</width>                     <!-- Breite des Kamerabildes -->
-      <height>1080</height>                   <!-- Höhe des Kamerabildes -->
-      <format>B8R8G8</format>                 <!-- Bildformat (Farbkanalreihenfolge) -->
+      <width>1920</width>                     <!-- Image width -->
+      <height>1080</height>                   <!-- Image height -->
+      <format>B8R8G8</format>                 <!-- Image format (color channel order) -->
     </image>
     <clip>
-      <near>0.02</near>                       <!-- Minimale Erkennungsdistanz -->
-      <far>20</far>                           <!-- Maximale Erkennungsdistanz -->
+      <near>0.02</near>                       <!-- Minimum detection distance -->
+      <far>20</far>                           <!-- Maximum detection distance -->
     </clip>
     <noise>
-      <type>gaussian</type>                   <!-- Art des Sensorrauschens (gaussian für Gauss'sches Rauschen) -->
-      <mean>0.0</mean>                        <!-- Mittelwert des Rauschens -->
-      <stddev>0.007</stddev>                  <!-- Standardabweichung des Rauschens -->
+      <type>gaussian</type>                   <!-- Sensor noise type (Gaussian noise) -->
+      <mean>0.0</mean>                        <!-- Noise mean -->
+      <stddev>0.007</stddev>                  <!-- Noise standard deviation -->
     </noise>
   </camera>
   <plugin name="zed2i_depth_driver" filename="libgazebo_ros_camera.so">
     <ros>
     </ros>
-    <camera_name>zed2i_depth</camera_name>     <!-- Name der Kamera im ROS-Kontext -->
-    <frame_name>camera_lens_link</frame_name>  <!-- Name des Koordinatenrahmens für die Kamera -->
-    <hack_baseline>0.07</hack_baseline>        <!-- Baseline-Hack für Stereo-Sicht -->
-    <min_depth>0.001</min_depth>               <!-- Minimale Tiefenmessung -->
-    <max_depth>100</max_depth>                 <!-- Maximale Tiefenmessung -->
+    <camera_name>zed2i_depth</camera_name>     <!-- Camera name in ROS -->
+    <frame_name>camera_lens_link</frame_name>  <!-- Frame name for the camera -->
+    <hack_baseline>0.07</hack_baseline>        <!-- Stereo baseline hack -->
+    <min_depth>0.001</min_depth>               <!-- Minimum depth measurement -->
+    <max_depth>100</max_depth>                 <!-- Maximum depth measurement -->
   </plugin>
 </sensor>
+
 
 ```
 <br/>
 
-Die Sensordaten können mit folgendem Befehl aufgerufen werden.
+Sensor data can be accessed with:
 ```
 ros2 topic echo /camera/image_raw
 ```
-oder alternativ direkt visualisiert werden
+or visualized directly with:
 ```
 ros2 run rqt_image_view rqt_image_view 
 ```
 <br/>
 
-RVIZ Configaration
+RViz Configuration
 
-Es ist zusätzlich möglich sich eine Pointcloud aus der Stereocamera ausgeben zu lassen. Hierfür muss das Image-Topic `/zed2i_depth/depth/image_raw` und das Pointcloud2-Topic /`zed2i_depth/points` subscribt werden. Der Output sollte dann wie in der nachfolgenden Abbildung aussehen. 
+It is also possible to output a point cloud from the stereo camera. To do this, subscribe to the image topic `/zed2i_depth/depth/image_raw` and the pointcloud2 topic `/zed2i_depth/points`.
+The output should look like the image below.
 
-Eine Vorlage der Rviz-Configuration ist hier zu finden: [**rviz-file**](/src/gazebo_train_gazebo/rviz/) 
+A template for the RViz configuration can be found here: [**rviz-file**](/src/gazebo_train_gazebo/rviz/) 
 
 ![](images/rviz2.png)
 <br />
 
-Mehr Informationen zum Gazbeo-Plugin: [**Camera Gazebo**](https://classic.gazebosim.org/tutorials?tut=ros_gzplugins#Camera)
-<br />
+More information about the Gazebo plugin: [**Camera Gazebo**](https://classic.gazebosim.org/tutorials?tut=ros_gzplugins#Camera)
 <br />
 
-Mehr Informationen zum Sensor: [**Stereolabs**](https://www.stereolabs.com/zed-2/)
+More information about the sensor: [**Stereolabs**](https://www.stereolabs.com/zed-2/)
 <br />
 <br />
 </details>
 
 <details>
-<summary>IMU</summary>
+  <summary>IMU</summary>
 
-<br />
+  <br />
 
-Der IMU-Sensor (Inertial Measurement Unit) misst die Beschleunigung, die Winkelgeschwindigkeit und die Orientierung des Modells. Dieser befindet sich im Zentrum und ist in der Simulation nicht dargestellt. Aufgrund der [**Odometrie**](https://de.wikipedia.org/wiki/Odometrie) kann der Zug seine Pose im Raum (Position und Orientierung) schätzen. Kombiniert man dies mit den optischen Sensoren ist eine sehr genaue Lagebestimmung möglich. 
-<br/>
+  The IMU (Inertial Measurement Unit) sensor measures acceleration, angular velocity, and the orientation of the model. It is located at the center of the train but is not visually represented in the simulation. Thanks to the use of <a href="https://en.wikipedia.org/wiki/Odometry"><strong>odometry</strong></a>, the train can estimate its pose (position and orientation) in space. When combined with the visual sensors, this allows for highly accurate localization.
 
-Die Sensordaten können mit folgendem Befehl aufgerufen werden.
-```
-ros2 topic echo /imu
-```
-<br />
-<br />
+  <br />
 
-Mehr Informationen zum Gazbeo-Plugin: [**Gazebo IMU**](https://classic.gazebosim.org/tutorials?tut=ros_gzplugins#IMU(GazeboRosImu))
+  Sensor data can be accessed using the following command:
+  <br />
+  ```
+  ros2 topic echo /imu</code>
+  ```
+  <br />
 
-<br />
-<br />
+  More information about the Gazebo plugin: 
+  <a href="https://classic.gazebosim.org/tutorials?tut=ros_gzplugins#IMU(GazeboRosImu)">
+    <strong>Gazebo IMU</strong>
+  </a>
+
+  <br /><br />
 </details>
-
-
-<br />
-
-# <div align="center">Useful Commands</div>
-
-  <details>
-  <summary>ROS2 Commands</summary>
-  <br /> 
-
-   Overview of useful commands as a PDF [**ROS2 Cheats Sheet**](https://github.com/ubuntu-robotics/ros2_cheats_sheet/blob/master/cli/cli_cheats_sheet.pdf)  
-
-  Also helpful: press the Tab key twice to list possible input commands.
-  <br />
-
-  Get a list of all active topics and visualize the data of a topic:
-  Visualisierung der Daten des Topics
-  ```
-  ros2 topic echo /(Topicname)
-  ```
-  Get the type, number of publishers, and subscribers for a topic:
-  ```
-  ros2 topic info /(Topicname)
-  ```
-
-
-  More information on nodes: [**ROS2 Understanding Topics**](https://docs.ros.org/en/foxy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Topics/Understanding-ROS2-Topics.html)
-
-  <br />
-
-  Gibt eine Auflistung aller aktiven Nodes zurück
-  ```
-  ros2 node list
-  ```
-  Gibt an, ob es sich um ein Topic, Action oder Service handelt und Daten versandt werden
-  ```
-  ros2 node info /(Nodename)
-  ```
-
-  Mehr Informationen zu Nodes : [**ROS2 Understanding Nodes**](https://docs.ros.org/en/foxy/Tutorials/Beginner-CLI-Tools/Understanding-ROS2-Nodes/Understanding-ROS2-Nodes.html#)
-
-  <br />
-
-  ### RVIZ
-
-  RVIZ is a graphical user interface for ROS that allows you to visualize a lot of information.
-  To add incoming topics to visualization, use the tab**add** > **By topic**.
-
-  To start the 3D visualization tool for ROS2, make sure you have **rviz2** installed:
-  ```
-  ros2 run rviz2 rviz2
-  ```
-  <br />
-
-  ### RQT
-
-  RQt is a framework for graphical user interfaces that implements various tools and interfaces in the form of plugins.
-
-  Make sure you have **rqt** installed.
-
-  <br />
-
-  To visualize topics and connections:
-  ```
-  ros2 run rqt_graph rqt_graph 
-  ```
-  To subscribe to the topic **/camera/image_raw** and visualize the camera:
-  ```
-  ros2 run rqt_image_view rqt_image_view 
-  ```
-
-  More information on RQt [**ROS2 Understanding RQT**](https://docs.ros.org/en/foxy/Concepts/About-RQt.html)
-
-
-  <br />
-  </details>
-  <details>
-  <summary>Gazebo Commands</summary>
-  <br />
-
-  Shutdown Gazebo
-  ```
-  killall -9 gazebo & killall -9 gzserver  & killall -9 gzclient
-  ```
-
-  ![](https://git.fh-aachen.de/lf4943s/gazebo_train/-/blob/main/images/gazebo.png)
-
-  - Transparent    : Display models as transparent
-  - Wireframe      : Display models as wireframe
-  - Collision      : Display model collision
-  - Joints         : Display joints of all links
-  - Center of Mass : Display center of mass
-  - Inertias       : Display Inertias of all links
-  - Contacts       : Display Contakt with other models
-  - Link Frames    : Display coordinare frames for links
-
-  <br />
-
-  More information on Gazebo: [**Gazebo**](https://classic.gazebosim.org/) 
-
-  <br />
-  </details>
-
-  <details>
-  <summary>SDF and URDF Commands</summary>
-
-
-  <br />
-
-
-  Convert a URDF file to an SDF file:
-  ```
-  gz sdf -p /my_urdf.urdf > /my_sdf.sdf
-  ```
-  Generate a PDF file with links and joints and their orientations from a URDF file:
-  ```
-  urdf_to_graphiz /my_urdf.urdf
-  ```
-  Quickly create a new model for tests:
-  ```
-  <?xml version='1.0'?>
-  <sdf version='1.7'>
-    <model name='XXX'>
-      <link name='link_1'>
-        <visual name='visual'>
-          <geometry>
-            <mesh>
-              <uri>model://XXX/meshes/XXX.stl</uri>
-              <scale>0.001 0.001 0.001</scale>
-            </mesh>
-          </geometry>
-        </visual>
-        <collision name='collision'>
-          <geometry>
-            <mesh>
-              <uri>model://map_1/meshes/map_1.stl</uri>
-            </mesh>
-          </geometry>
-        </collision>
-      </link>
-    </model>
-  </sdf>
-  ```
-  <br />
-
-  More information on SDF files: [**SDFormat**](http://sdformat.org/) 
-
-  <br />
-  </details>
-
 <br />
 
 # <div align="center">Environments</div>
@@ -619,8 +342,6 @@ Mehr Informationen zum Gazbeo-Plugin: [**Gazebo IMU**](https://classic.gazebosim
     <img src="https://www.vectorsoft.de/wp-content/uploads/2019/10/C_API.png" width="10%" alt="C++"/></a>
   <a href = "https://docs.ros.org/en/foxy/index.html" style="text-decoration:none;">
     <img src="https://picknik.ai/assets/images/blog_posts/ROS2/ros2.png" width="10%" alt="ROS" /></a>
-  <a href = "https://gazebosim.org/home" style="text-decoration:none;">
-    <img src="https://upload.wikimedia.org/wikipedia/en/5/5e/Gazebo_logo_without_text.svg" width="10%" alt="Gazebo" /></a>
   <a href = "https://about.gitlab.com/" style="text-decoration:none;">
     <img src="https://cdn.jsdelivr.net/gh/devicons/devicon/icons/git/git-original.svg"  width="10%" lt="Git" /></a>
   <a href = "https://ubuntu.com/" style="text-decoration:none;">
@@ -629,12 +350,9 @@ Mehr Informationen zum Gazbeo-Plugin: [**Gazebo IMU**](https://classic.gazebosim
     <img src="https://newscrewdriver.files.wordpress.com/2018/07/sdformat.png"  width="7%" lt="SDF" /></a>
 </div>
 
-
-
 <br /> 
 <br /> 
 
- 
 # <div align="center">Contact</div>
 
 For business inquiries or professional support requests please visit 
@@ -646,9 +364,6 @@ For business inquiries or professional support requests please visit
   <img src="https://github.com/Zerquer/archetyp/blob/main/social/transparent.png?raw=true" width="3%" alt="" />
   <a href="https://www.linkedin.com/in/luigi-ferraioli-850554250/"  style="text-decoration:none;">
     <img src="https://github.com/Zerquer/archetyp/blob/main/social/linkedin.png?raw=true" width="3%" alt="" /></a>
-  <img src="https://github.com/Zerquer/archetyp/blob/main/social/transparent.png?raw=true" width="3%" alt="" />
-  <a href="https://www.instagram.com/_luigi_21/" style="text-decoration:none;">
-    <img src="https://github.com/Zerquer/archetyp/blob/main/social/instagram.png?raw=true" width="3%" alt="" /></a>
     <img src="https://github.com/Zerquer/archetyp/blob/main/social/transparent.png?raw=true" width="3%" alt="" />
 
 </div>
