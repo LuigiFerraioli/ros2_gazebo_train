@@ -1,4 +1,5 @@
 # System dependencies for Gazebo train simulation
+ros-humble-ament-cmake
 ros-humble-gazebo-ros
 ros-humble-gazebo-ros-pkgs
 ros-humble-joint-state-publisher
